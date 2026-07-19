@@ -1,0 +1,1 @@
+import dataUrl from './data.json?url'; console.log(dataUrl);

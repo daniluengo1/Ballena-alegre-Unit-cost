@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import * as XLSX from 'xlsx';
 import './index.css';
+import dataUrl from './data.json?url';
 
 function formatEuro(num) {
   if (num === null || num === undefined) return '0,00 €';
@@ -35,8 +36,8 @@ function App() {
   const loadData = async () => {
     setLoading(true);
     try {
-      // Obtenemos los datos estáticos desde la misma carpeta
-      const res = await fetch('./data.json');
+      // Obtenemos los datos estáticos usando la URL empaquetada por Vite
+      const res = await fetch(dataUrl);
       const jsonData = await res.json();
       setData(jsonData);
     } catch (err) {
