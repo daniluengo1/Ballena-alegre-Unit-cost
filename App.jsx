@@ -445,7 +445,7 @@ function App() {
                           {p.docNo}
                           {p.omitted && (
                             <span className="px-2 py-0.5 bg-rose-100 text-rose-700 text-[10px] font-bold rounded-full uppercase tracking-wider">
-                              Omitido
+                              {p.omittedReason === 'Abierto' ? 'Abierto' : 'Omitido'}
                             </span>
                           )}
                         </td>
