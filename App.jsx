@@ -443,9 +443,14 @@ function App() {
                         <td className="p-4 text-slate-600">{p.date}</td>
                         <td className="p-4 font-medium text-slate-800 flex items-center gap-2">
                           {p.docNo}
+                          {p.isOpen && !p.omitted && (
+                            <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded-full uppercase tracking-wider">
+                              Abierto
+                            </span>
+                          )}
                           {p.omitted && (
                             <span className="px-2 py-0.5 bg-rose-100 text-rose-700 text-[10px] font-bold rounded-full uppercase tracking-wider">
-                              {p.omittedReason === 'Abierto' ? 'Abierto' : 'Omitido'}
+                              {p.omittedReason === 'Abierto (0€)' ? 'Abierto (0€)' : 'Omitido'}
                             </span>
                           )}
                         </td>
