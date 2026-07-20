@@ -20,6 +20,12 @@ function App() {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [selectedProduct, setSelectedProduct] = useState(null);
   
+  // Auth
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loginUser, setLoginUser] = useState('');
+  const [loginPass, setLoginPass] = useState('');
+  const [loginError, setLoginError] = useState(false);
+  
   // Filters
   const [hideZeroInventory, setHideZeroInventory] = useState(false);
   const [qtyGreaterThanZero, setQtyGreaterThanZero] = useState(false);
@@ -135,6 +141,61 @@ function App() {
     XLSX.utils.book_append_sheet(wb, ws, "Análisis Costes");
     XLSX.writeFile(wb, "Ballena_Alegre_Analisis.xlsx");
   };
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (loginUser === 'bam' && loginPass === 'bam2026kK!') {
+      setIsAuthenticated(true);
+      setLoginError(false);
+    } else {
+      setLoginError(true);
+    }
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 font-sans">
+        <div className="bg-white max-w-md w-full rounded-2xl shadow-sm border border-slate-100 p-8">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Ballena Alegre</h1>
+            <p className="text-slate-500 mt-2">Acceso a Análisis de Costes</p>
+          </div>
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Usuario</label>
+              <input 
+                type="text" 
+                value={loginUser}
+                onChange={e => setLoginUser(e.target.value)}
+                className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                placeholder="Introduce tu usuario"
+                autoFocus
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Contraseña</label>
+              <input 
+                type="password" 
+                value={loginPass}
+                onChange={e => setLoginPass(e.target.value)}
+                className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                placeholder="••••••••"
+              />
+            </div>
+            {loginError && (
+              <p className="text-rose-500 text-sm font-medium text-center">Usuario o contraseña incorrectos</p>
+            )}
+            <button 
+              type="submit" 
+              className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors shadow-sm"
+            >
+              Acceder
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 p-6 font-sans text-slate-800">
@@ -378,12 +439,19 @@ function App() {
                     </tr>
                   ) : (
                     selectedProduct.purchases.map((p, idx) => (
-                      <tr key={idx} className="hover:bg-slate-50 transition-colors">
+                      <tr key={idx} className={`hover:bg-slate-50 transition-colors ${p.omitted ? 'opacity-60 bg-slate-50/50' : ''}`}>
                         <td className="p-4 text-slate-600">{p.date}</td>
-                        <td className="p-4 font-medium text-slate-800">{p.docNo}</td>
-                        <td className="p-4 text-right font-medium text-blue-600">{formatNumber(p.quantity)}</td>
-                        <td className="p-4 text-right text-slate-700">{formatEuro(p.totalCost)}</td>
-                        <td className="p-4 text-right font-semibold text-slate-900">{formatEuro(p.unitCost)}</td>
+                        <td className="p-4 font-medium text-slate-800 flex items-center gap-2">
+                          {p.docNo}
+                          {p.omitted && (
+                            <span className="px-2 py-0.5 bg-rose-100 text-rose-700 text-[10px] font-bold rounded-full uppercase tracking-wider">
+                              Omitido
+                            </span>
+                          )}
+                        </td>
+                        <td className={`p-4 text-right font-medium ${p.omitted ? 'text-slate-400 line-through' : 'text-blue-600'}`}>{formatNumber(p.quantity)}</td>
+                        <td className={`p-4 text-right ${p.omitted ? 'text-slate-400 line-through' : 'text-slate-700'}`}>{formatEuro(p.totalCost)}</td>
+                        <td className={`p-4 text-right font-semibold ${p.omitted ? 'text-slate-400 line-through' : 'text-slate-900'}`}>{formatEuro(p.unitCost)}</td>
                       </tr>
                     ))
                   )}
