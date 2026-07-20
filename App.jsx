@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import * as XLSX from 'xlsx';
 import './index.css';
-import dataUrl from './data.json?url';
+import dataBallenaUrl from './data_ballena.json?url';
+import dataCalaPolaUrl from './data_calapola.json?url';
 
 function formatEuro(num) {
   if (num === null || num === undefined) return '0,00 €';
@@ -19,6 +20,7 @@ function App() {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [activeCompany, setActiveCompany] = useState('ballena');
   
   // Auth
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -39,11 +41,11 @@ function App() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  const loadData = async () => {
+  const loadData = async (company = activeCompany) => {
     setLoading(true);
     try {
-      // Obtenemos los datos estáticos usando la URL empaquetada por Vite
-      const res = await fetch(dataUrl);
+      const targetUrl = company === 'ballena' ? dataBallenaUrl : dataCalaPolaUrl;
+      const res = await fetch(targetUrl);
       const jsonData = await res.json();
       setData(jsonData);
     } catch (err) {
@@ -53,8 +55,8 @@ function App() {
   };
 
   useEffect(() => {
-    loadData();
-  }, []);
+    loadData(activeCompany);
+  }, [activeCompany]);
 
   const handleSort = (key) => {
     let direction = 'asc';
@@ -203,10 +205,20 @@ function App() {
         
         {/* Header */}
         <div className="flex flex-col gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Ballena Alegre</h1>
-              <p className="text-sm text-slate-500 mt-1">Análisis de Coste Medio e Inventario Real vs BC</p>
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex space-x-2 bg-slate-100 p-1 rounded-xl">
+              <button 
+                onClick={() => setActiveCompany('ballena')}
+                className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeCompany === 'ballena' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                Ballena Alegre
+              </button>
+              <button 
+                onClick={() => setActiveCompany('calapola')}
+                className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeCompany === 'calapola' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                Cala Pola
+              </button>
             </div>
             <div className="flex gap-4">
               <input 
